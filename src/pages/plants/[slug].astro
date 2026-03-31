@@ -222,7 +222,7 @@ const diaryCount = diary.length;
 .timeline {
   position: relative;
   margin-top: 40px;
-  padding-left: 20px;
+  padding-left: 0;   /* ←消す */
 }
 
 .timeline::before {
@@ -251,7 +251,8 @@ const diaryCount = diary.length;
 }
 
 .timeline-content {
-  margin-left: 20px;
+  max-width: 600px;   /* ←横幅制御 */
+  margin: 0 auto;     /* ←中央寄せ */
 }
 
 .meta {
