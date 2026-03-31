@@ -9,12 +9,12 @@ const files = fs.readdirSync(plantsDir);
 const plants = files.map((file) => {
   const content = fs.readFileSync(path.join(plantsDir, file), 'utf-8');
 
-  const title = content.match(/title:\s*(.*)/)?.[1] || '';
-  const species = content.match(/species:\s*(.*)/)?.[1] || '';
-  const image = content.match(/cover_image:\s*(.*)/)?.[1] || '';
+  const title = content.match(/title:\s*(.*)/)?.[1]?.trim() || '';
+  const species = content.match(/species:\s*(.*)/)?.[1]?.trim() || '';
+  const image = content.match(/cover_image:\s*(.*)/)?.[1]?.trim() || '';
 
-  const acquired = content.match(/acquired_date:\s*(.*)/)?.[1] || '';
-  const location = content.match(/location:\s*(.*)/)?.[1] || '';
+  const acquired = content.match(/acquired_date:\s*(.*)/)?.[1]?.trim() || '';
+  const location = content.match(/location:\s*(.*)/)?.[1]?.trim() || '';
 
   const diaryMatches = [...content.matchAll(/- date:/g)];
   const diaryCount = diaryMatches.length;
@@ -38,27 +38,30 @@ const plants = files.map((file) => {
 ---
 
 <BaseLayout title="Plants" count={plants.length}>
-　<div class="sort-bar">
-  <button onclick="sortPlants('updated')">更新順</button>
-  <button onclick="sortPlants('created')">追加順</button>
-</div>
+
+  <div class="sort-bar">
+    <button onclick="sortPlants('updated')">更新順</button>
+    <button onclick="sortPlants('created')">追加順</button>
+  </div>
 
   <div class="list">
 
     {plants.map((plant) => (
       <a 
-  href={`/plants/${plant.slug}`} 
-  class="card"
-  data-updated={plant.latest}
-  data-created={plant.acquired}
->
+        href={import.meta.env.BASE_URL + "/plants/" + plant.slug}
+        class="card"
+        data-updated={plant.latest}
+        data-created={plant.acquired}
+      >
 
-        <!-- 画像 -->
+        <!-- 🔥 画像修正 -->
         <div class="image-wrap">
-          <img src={plant.image} class="thumb" />
+          <img 
+            src={import.meta.env.BASE_URL + plant.image} 
+            class="thumb" 
+          />
         </div>
 
-        <!-- 情報 -->
         <div class="info">
 
           <div class="status">育成中</div>
@@ -84,36 +87,35 @@ const plants = files.map((file) => {
   </div>
 
   <style>
-    /* 🔥 セリフ体フォント */
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap');
 
-
-    
     .list {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  max-width: 800px;   /* ←追加（1000→800くらい） */
-  margin: 0 auto;     /* ←中央寄せ */
-}
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
     .sort-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-.sort-bar button {
-  padding: 6px 12px;
-  border: 1px solid #cfc4b2;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 13px;
-}
+    .sort-bar button {
+      padding: 6px 12px;
+      border: 1px solid #cfc4b2;
+      background: #fff;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 13px;
+    }
 
-.sort-bar button:hover {
-  background: #f3efe6;
-}
+    .sort-bar button:hover {
+      background: #f3efe6;
+    }
+
     .card {
       display: block;
       background: #fff;
@@ -126,7 +128,7 @@ const plants = files.map((file) => {
         0 8px 24px rgba(0,0,0,0.06);
 
       transition: 0.3s ease;
-      text-decoration: none;  /* ←これ重要 */
+      text-decoration: none;
       color: inherit;
     }
 
@@ -137,7 +139,6 @@ const plants = files.map((file) => {
         0 12px 32px rgba(0,0,0,0.08);
     }
 
-    /* 🔥 ズーム用ラッパー */
     .image-wrap {
       overflow: hidden;
     }
@@ -150,7 +151,6 @@ const plants = files.map((file) => {
       transition: transform 0.6s ease;
     }
 
-    /* 🔥 ホバーズーム */
     .card:hover .thumb {
       transform: scale(1.25);
     }
@@ -198,20 +198,20 @@ const plants = files.map((file) => {
     }
   </style>
 
-<script is:inline>
-  function sortPlants(type) {
-    const list = document.querySelector('.list');
-    const cards = Array.from(document.querySelectorAll('.card'));
+  <script is:inline>
+    function sortPlants(type) {
+      const list = document.querySelector('.list');
+      const cards = Array.from(document.querySelectorAll('.card'));
 
-    cards.sort((a, b) => {
-      const aVal = new Date(a.dataset[type]);
-      const bVal = new Date(b.dataset[type]);
-      return bVal - aVal;
-    });
+      cards.sort((a, b) => {
+        const aVal = new Date(a.dataset[type]);
+        const bVal = new Date(b.dataset[type]);
+        return bVal - aVal;
+      });
 
-    list.innerHTML = '';
-    cards.forEach(card => list.appendChild(card));
-  }
-</script>
+      list.innerHTML = '';
+      cards.forEach(card => list.appendChild(card));
+    }
+  </script>
 
 </BaseLayout>
