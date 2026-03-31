@@ -48,7 +48,7 @@ const plants = files.map((file) => {
 
     {plants.map((plant) => (
       <a 
-        href={import.meta.env.BASE_URL + "/plants/" + plant.slug}
+        href={import.meta.env.BASE_URL + "plants/" + plant.slug}
         class="card"
         data-updated={plant.latest}
         data-created={plant.acquired}
