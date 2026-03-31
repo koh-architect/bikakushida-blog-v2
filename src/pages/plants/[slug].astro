@@ -317,24 +317,22 @@ const diaryCount = diary.length;
 @media (max-width: 600px) {
 
   .timeline {
-    padding-left: 0;
+    padding-left: 20px;   /* ←少し余白戻す */
   }
 
   .timeline::before {
-    left: 6px;
+    left: 8px;            /* ←線位置調整 */
   }
 
   .timeline-dot {
-    left: 0;
+    left: 3px;            /* ←ドット位置調整 */
   }
 
   .timeline-content {
-    margin-left: 0;
+    margin-left: 10px;    /* ←これが重要 */
   }
 
-  .thumb {
-    margin: 12px auto;  /* ←スマホだけ中央 */
-  }
+}
 
 }
 </style>
