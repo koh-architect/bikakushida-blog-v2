@@ -3,122 +3,61 @@
   <head>
     <meta charset="utf-8" />
 
-    <!-- ✅ iOS対策込み viewport -->
+    <!-- iOS対策 -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
     <title>ビカクシダ管理 CMS</title>
 
-  <style>
-  @media (max-width: 768px) {
+    <style>
+      @media (max-width: 768px) {
 
-    /* ===== モーダル強制補正（最重要） ===== */
+        /* ===== モーダル補正 ===== */
 
-    [role="dialog"] {
-      position: fixed !important;
-      inset: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      max-width: 100vw !important;
-      max-height: 100vh !important;
-      overflow: auto !important;
-      background: #fff !important;
-    }
+        [role="dialog"] {
+          position: fixed !important;
+          inset: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: 100vw !important;
+          max-height: 100vh !important;
+          overflow: auto !important;
+          background: #fff !important;
+        }
 
-    /* 中身 */
-    [role="dialog"] > div {
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-    }
+        [role="dialog"] > div {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 !important;
+        }
 
-    /* 画像一覧グリッド */
-    [role="dialog"] img {
-      width: 100% !important;
-      height: auto !important;
-    }
+        [role="dialog"] img {
+          width: 100% !important;
+          height: auto !important;
+        }
 
-    /* グリッドを2列に */
-    [role="dialog"] [class*="grid"],
-    [role="dialog"] [class*="Grid"] {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
+        [role="dialog"] [class*="grid"],
+        [role="dialog"] [class*="Grid"] {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 8px !important;
+        }
 
-    /* ボタンを常に見えるように */
-    [role="dialog"] button {
-      position: sticky !important;
-      bottom: 0 !important;
-      z-index: 9999 !important;
-      background: white !important;
-    }
+        [role="dialog"] button {
+          position: sticky !important;
+          bottom: 0 !important;
+          z-index: 9999 !important;
+          background: white !important;
+        }
 
-}
-  </style>
+      }
+    </style>
   </head>
 
   <body>
-    <!-- Decap CMS -->
+
+    <!-- 🔥 Decap CMS本体（これだけでOK） -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-    <script>
-    CMS.registerEventListener({
-      name: 'postSave',
-      handler: async ({ entry }) => {
-        try {
-          const data = entry.get('data');
-          const diary = data.get('diary');
 
-          if (!diary) return;
-
-          const updatedDiary = await Promise.all(
-            diary.map(async (item) => {
-              const image = item.get('image');
-              if (!image) return item;
-
-              // 画像URL取得
-              const url = image;
-
-              // サイズ取得
-              const res = await fetch(url);
-              const blob = await res.blob();
-              const sizeKB = Math.round(blob.size / 1024);
-
-              return item.set('image_size', sizeKB);
-            })
-          );
-
-          console.log("画像サイズ自動取得:", updatedDiary);
-
-        } catch (e) {
-          console.error("サイズ取得エラー", e);
-        }
-      }
-    });
-    </script>
-    <script>
-    CMS.registerEventListener({
-      name: 'preSave',
-      handler: async ({ entry }) => {
-        const data = entry.get('data');
-        const diary = data.get('diary');
-
-        if (!diary) return;
-
-        for (let i = 0; i < diary.size; i++) {
-          const item = diary.get(i);
-          const image = item.get('image');
-
-          if (image) {
-            const res = await fetch(image);
-            const blob = await res.blob();
-            const sizeKB = Math.round(blob.size / 1024);
-
-            alert("画像サイズ: " + sizeKB + " KB");
-          }
-        }
-      }
-    });
-    </script>
     <script>
       /* =========================
          プレビューCSS
@@ -167,5 +106,6 @@
         );
       });
     </script>
+
   </body>
 </html>
