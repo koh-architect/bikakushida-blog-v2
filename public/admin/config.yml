@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: koh-architect/bikakushida-blog-v2
   branch: main
 
 media_folder: public/images/uploads
@@ -39,5 +40,4 @@ collections:
             widget: "select"
             options: ["水やり", "施肥", "植え替え", "観察", "その他"]
           - { label: "写真", name: "image", widget: "image", required: false }
-          
           - { label: "記録メモ", name: "note", widget: "text" }
