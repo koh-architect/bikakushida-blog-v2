@@ -12,6 +12,9 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
+      /* =========================
+        ベース
+      ========================= */
       body {
         margin: 0;
         background: #f5f1e8;
@@ -19,6 +22,14 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         font-family: 'Noto Serif JP', serif;
       }
 
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* =========================
+        ヘッダー
+      ========================= */
       header {
         padding: 20px 30px;
         border-bottom: 1px solid #e0d9cc;
@@ -46,6 +57,7 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         line-height: 1.6;
       }
 
+      /* 上段 */
       .title-main {
         font-family: 'Playfair Display', serif;
         font-size: 14px;
@@ -53,25 +65,34 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         letter-spacing: 1px;
       }
 
+      /* メインタイトル */
       .title-sub {
-        font-family: 'Noto Serif JP', serif;
-        font-size: 30px;
-        font-weight: 400;
-        letter-spacing: 1px;
-        color: #2a2a2a;
-      }
+  display: flex !important;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 30px;
+  letter-spacing: 1px;
+}
 
+      /* Platycerium */
       .platy {
         color: #3f6b3f;
         font-family: 'Playfair Display', serif;
         font-weight: 600;
-        margin-right: 4px;
       }
 
+      /* 育成記録 */
+      .jp-title {
+        font-family: 'Noto Serif JP', serif;
+        color: #2a2a2a;
+      }
+
+      /* 下段 */
       .title-row {
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-top: 4px;
       }
 
       .title-jp {
@@ -88,8 +109,11 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         border-radius: 999px;
       }
 
+      /* =========================
+        メインエリア
+      ========================= */
       .page {
-        max-width: 1000px;
+        max-width: 1200px;   /* ←広げた（重要） */
         margin: auto;
         padding: 30px;
         animation: fadeIn 0.6s ease;
@@ -106,10 +130,42 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         }
       }
 
-      a {
-        text-decoration: none;
-        color: inherit;
+      /* =========================
+        🔥 スマホ対応
+      ========================= */
+      @media (max-width: 600px) {
+
+        header {
+          padding: 16px 16px;
+        }
+
+        .left {
+          gap: 12px;
+        }
+
+        .logo {
+          width: 70px;
+        }
+
+        /* タイトル縦化（今回の本命） */
+        .title-sub {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+          font-size: 24px;
+        }
+
+        .title-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+        }
+
+        .page {
+          padding: 20px 16px;
+        }
       }
+
     </style>
   </head>
 
@@ -120,23 +176,26 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
 
         <div class="left">
 
-          <!-- 🔥 GitHub Pages対応（ここが重要） -->
+          <!-- ロゴ -->
           <a href={import.meta.env.BASE_URL + "plants/"}>
             <img src={import.meta.env.BASE_URL + "images/logo.png"} class="logo" />
           </a>
 
+          <!-- タイトル -->
           <div class="title-block">
+
             <div class="title-main">Cultivation Journal</div>
 
             <div class="title-sub">
-  <div class="platy">Platycerium</div>
-  <div class="jp-title">育成記録</div>
-</div>
+              <div class="platy">Platycerium</div>
+              <div class="jp-title">育成記録</div>
+            </div>
 
             <div class="title-row">
               <div class="title-jp">我が家のビカクシダたち</div>
               <div class="count-badge">株数：{count}</div>
             </div>
+
           </div>
 
         </div>
