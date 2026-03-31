@@ -5,6 +5,13 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <meta property="og:title" content={title} />
+<meta property="og:description" content="ビカクシダの育成記録サイト" />
+<meta property="og:image" content="https://bikakushida.jp/images/ogp.jpg" />
+<meta property="og:url" content="https://bikakushida.jp" />
+<meta property="og:type" content="website" />
+
+<meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
