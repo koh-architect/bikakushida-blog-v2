@@ -2,7 +2,7 @@ backend:
   name: github
   repo: koh-architect/bikakushida-blog-v2
   branch: main
-  base_url: https://decapcms.org
+  base_url: https://api.decapcms.org
   auth_endpoint: auth
 
 media_folder: public/images/uploads
