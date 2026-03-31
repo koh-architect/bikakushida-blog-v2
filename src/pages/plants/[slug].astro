@@ -58,7 +58,7 @@ const diaryCount = diary.length;
 <!-- 🔥 画像（BASE_URL対応） -->
 {image && (
   <img 
-    src={import.meta.env.BASE_URL + image} 
+    src={image}
     class="hero" 
   />
 )}
@@ -118,7 +118,7 @@ const diaryCount = diary.length;
         <!-- 🔥 日誌画像も修正 -->
         {d.image && (
           <img 
-            src={import.meta.env.BASE_URL + d.image}
+            src={d.image}
             class="thumb" 
             onclick="openModal(this.src)" 
           />
