@@ -46,7 +46,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         line-height: 1.6;
       }
 
-      /* 英字 */
       .title-main {
         font-family: 'Playfair Display', serif;
         font-size: 14px;
@@ -54,7 +53,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         letter-spacing: 1px;
       }
 
-      /* メインタイトル */
       .title-sub {
         font-family: 'Noto Serif JP', serif;
         font-size: 30px;
@@ -63,7 +61,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         color: #2a2a2a;
       }
 
-      /* Platyceriumだけ色変更 */
       .platy {
         color: #3f6b3f;
         font-family: 'Playfair Display', serif;
@@ -83,7 +80,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         color: #8a7f6a;
       }
 
-      /* 株数バッジ */
       .count-badge {
         font-size: 12px;
         background: #dfeadf;
@@ -92,7 +88,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         border-radius: 999px;
       }
 
-      /* メインエリア */
       .page {
         max-width: 1000px;
         margin: auto;
@@ -125,12 +120,11 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
 
         <div class="left">
 
-          <!-- ロゴ -->
-          <a href="/plants">
-            <img src="/images/logo.png" class="logo" />
+          <!-- 🔥 GitHub Pages対応（ここが重要） -->
+          <a href={import.meta.env.BASE_URL + "plants/"}>
+            <img src={import.meta.env.BASE_URL + "images/logo.png"} class="logo" />
           </a>
 
-          <!-- タイトル -->
           <div class="title-block">
             <div class="title-main">Cultivation Journal</div>
 

@@ -22,15 +22,16 @@ const content = fs.readFileSync(
   'utf-8'
 );
 
-const title = content.match(/title:\s*(.*)/)?.[1] || '';
-const image = content.match(/cover_image:\s*(.*)/)?.[1] || '';
-const description = content.match(/description:\s*(.*)/)?.[1] || '';
-const species = content.match(/species:\s*(.*)/)?.[1] || '';
+// 🔥 trim追加（重要）
+const title = content.match(/title:\s*(.*)/)?.[1]?.trim() || '';
+const image = content.match(/cover_image:\s*(.*)/)?.[1]?.trim() || '';
+const description = content.match(/description:\s*(.*)/)?.[1]?.trim() || '';
+const species = content.match(/species:\s*(.*)/)?.[1]?.trim() || '';
 
-const acquired = content.match(/acquired_date:\s*(.*)/)?.[1] || '';
-const place = content.match(/location:\s*(.*)/)?.[1] || '';
-const mount = content.match(/mount:\s*(.*)/)?.[1] || '';
-const status = content.match(/status:\s*(.*)/)?.[1] || '';
+const acquired = content.match(/acquired_date:\s*(.*)/)?.[1]?.trim() || '';
+const place = content.match(/location:\s*(.*)/)?.[1]?.trim() || '';
+const mount = content.match(/mount:\s*(.*)/)?.[1]?.trim() || '';
+const status = content.match(/status:\s*(.*)/)?.[1]?.trim() || '';
 
 const diaryMatches = [...content.matchAll(
   /- date:\s*(.*)\n\s*type:\s*(.*)\n(?:\s*image:\s*(.*)\n)?\s*note:\s*(.*)/g
@@ -40,10 +41,10 @@ const diary = diaryMatches
   .map(m => ({
     date: m[1],
     type: m[2],
-    image: m[3] || '',
+    image: (m[3] || '').trim(),
     note: m[4]
   }))
-  .sort((a, b) => new Date(b.date) - new Date(a.date)); // 🔥ここ追加
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
 
 const diaryCount = diary.length;
 ---
@@ -54,17 +55,22 @@ const diaryCount = diary.length;
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@400;600&display=swap');
 </style>
 
-{image && <img src={image} class="hero" />}
+<!-- 🔥 画像（BASE_URL対応） -->
+{image && (
+  <img 
+    src={import.meta.env.BASE_URL + image} 
+    class="hero" 
+  />
+)}
 
 <div class="title-block">
   <h1 class="title">{title}</h1>
   {species && <div class="species">{species}</div>}
-  <div class="divider"></div> <!-- ←追加 -->
+  <div class="divider"></div>
 </div>
 
 <p class="description">{description}</p>
 
-<!-- 🔥 表UI -->
 <div class="info-grid">
 
   <div class="info-item">
@@ -92,7 +98,6 @@ const diaryCount = diary.length;
     <div class="value status">{status}</div>
   </div>
 
-  <!-- 🔥 ダミーでバランス取る -->
   <div class="info-item empty"></div>
 
 </div>
@@ -110,8 +115,13 @@ const diaryCount = diary.length;
           {d.date} / {d.type}
         </div>
 
+        <!-- 🔥 日誌画像も修正 -->
         {d.image && (
-          <img src={d.image} class="thumb" onclick="openModal(this.src)" />
+          <img 
+            src={import.meta.env.BASE_URL + d.image}
+            class="thumb" 
+            onclick="openModal(this.src)" 
+          />
         )}
 
         <p class="note">{d.note}</p>
@@ -123,7 +133,6 @@ const diaryCount = diary.length;
 
 </div>
 
-<!-- モーダル -->
 <div id="modal" class="modal" onclick="closeModal()">
   <img id="modal-img" />
 </div>
@@ -157,7 +166,6 @@ const diaryCount = diary.length;
   margin-bottom: 30px;
 }
 
-/* 🔥 表 */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -193,20 +201,11 @@ const diaryCount = diary.length;
   line-height: 1.4;
 }
 
-/* 🔥 ステータス強調 */
 .status {
   color: #3f6b3f;
   font-weight: 600;
 }
 
-/* 日誌 */
-.entry {
-  background: #fff;
-  padding: 18px;
-  border-radius: 12px;
-  margin-bottom: 25px;
-}
-/* タイムライン */
 .timeline {
   position: relative;
   margin-top: 40px;
@@ -242,14 +241,12 @@ const diaryCount = diary.length;
   margin-left: 20px;
 }
 
-/* 日付 */
 .meta {
   font-size: 12px;
   color: #8a7f6a;
   margin-bottom: 6px;
 }
 
-/* 画像（小さめ） */
 .thumb {
   width: 330px;
   border-radius: 8px;
@@ -262,7 +259,6 @@ const diaryCount = diary.length;
   transform: scale(1.05);
 }
 
-/* コメント（サイズ調整＋明朝） */
 .note {
   font-family: 'Noto Serif JP', serif;
   font-size: 13px;
@@ -270,7 +266,6 @@ const diaryCount = diary.length;
   color: #333;
 }
 
-/* モーダル */
 .modal {
   display: none;
   position: fixed;
@@ -289,6 +284,7 @@ const diaryCount = diary.length;
   max-height: 90%;
   border-radius: 10px;
 }
+
 .divider {
   width: 100%;
   height: 1px;
@@ -311,4 +307,3 @@ const diaryCount = diary.length;
 </script>
 
 </BaseLayout>
-
