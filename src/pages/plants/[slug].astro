@@ -165,6 +165,7 @@ const diaryCount = diary.length;
   margin-top: 6px;
 }
 
+
 .species {
   font-family: 'Playfair Display', serif;
   font-size: 30px;
@@ -260,9 +261,11 @@ const diaryCount = diary.length;
 }
 
 .thumb {
-  width: 330px;
+  width: 100%;
+  max-width: 520px;   /* ←PCで大きくする */
   border-radius: 8px;
-  margin: 8px 0;
+  margin: 12px auto;  /* ←中央寄せ */
+  display: block;     /* ←必須 */
   cursor: pointer;
   transition: 0.3s;
 }
