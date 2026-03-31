@@ -332,7 +332,18 @@ const diaryCount = diary.length;
   .timeline-content {
     margin-left: 10px;    /* ←これが重要 */
   }
+　/* 🔥 PCだけ調整 */
+@media (min-width: 601px) {
 
+  .timeline-content {
+    margin-left: 20px;   /* ←これで被り解消 */
+  }
+
+  .meta {
+    margin-left: 4px;    /* ←微調整 */
+  }
+
+}
 }
 
 
