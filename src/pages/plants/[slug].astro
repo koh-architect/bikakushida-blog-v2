@@ -313,38 +313,43 @@ const diaryCount = diary.length;
 }
 
 /* =========================
-  🔥 スマホ最適化（ここが重要）
+  🔥 スマホ
 ========================= */
 @media (max-width: 600px) {
 
   .timeline {
-    padding-left: 20px;   /* ←少し余白戻す */
+    padding-left: 20px;
   }
 
   .timeline::before {
-    left: 8px;            /* ←線位置調整 */
+    left: 8px;
   }
 
   .timeline-dot {
-    left: 3px;            /* ←ドット位置調整 */
+    left: 3px;
   }
 
   .timeline-content {
-    margin-left: 10px;    /* ←これが重要 */
+    margin-left: 10px;
   }
-　/* 🔥 PCだけ調整 */
+
+}
+
+/* =========================
+  🔥 PC（これを外に出す！！）
+========================= */
 @media (min-width: 601px) {
 
   .timeline-content {
-    margin-left: 20px;   /* ←これで被り解消 */
+    margin-left: 32px;   /* ←ここが効く */
   }
 
   .meta {
-    margin-left: 4px;    /* ←微調整 */
+    margin-left: 6px;
   }
 
 }
-}
+
 
 
 </style>
