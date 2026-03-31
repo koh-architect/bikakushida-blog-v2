@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
 
+# 🔥 追加：同時実行制御
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pages: write
@@ -21,9 +26,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: "npm" # 🔥 追加：高速化
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # 🔥 npm install → ci に変更（安定）
 
       - name: Build Astro
         run: npm run build
@@ -37,6 +43,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
