@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- ✅ iOS対策込み viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>ビカクシダ管理 CMS</title>
+
+  <style>
+  @media (max-width: 768px) {
+
+    /* ===== モーダル強制補正（最重要） ===== */
+
+    [role="dialog"] {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      overflow: auto !important;
+      background: #fff !important;
+    }
+
+    /* 中身 */
+    [role="dialog"] > div {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+    }
+
+    /* 画像一覧グリッド */
+    [role="dialog"] img {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    /* グリッドを2列に */
+    [role="dialog"] [class*="grid"],
+    [role="dialog"] [class*="Grid"] {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+
+    /* ボタンを常に見えるように */
+    [role="dialog"] button {
+      position: sticky !important;
+      bottom: 0 !important;
+      z-index: 9999 !important;
+      background: white !important;
+    }
+
+}
+  </style>
+  </head>
+
+  <body>
+    <!-- Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+    CMS.registerEventListener({
+      name: 'postSave',
+      handler: async ({ entry }) => {
+        try {
+          const data = entry.get('data');
+          const diary = data.get('diary');
+
+          if (!diary) return;
+
+          const updatedDiary = await Promise.all(
+            diary.map(async (item) => {
+              const image = item.get('image');
+              if (!image) return item;
+
+              // 画像URL取得
+              const url = image;
+
+              // サイズ取得
+              const res = await fetch(url);
+              const blob = await res.blob();
+              const sizeKB = Math.round(blob.size / 1024);
+
+              return item.set('image_size', sizeKB);
+            })
+          );
+
+          console.log("画像サイズ自動取得:", updatedDiary);
+
+        } catch (e) {
+          console.error("サイズ取得エラー", e);
+        }
+      }
+    });
+    </script>
+    <script>
+    CMS.registerEventListener({
+      name: 'preSave',
+      handler: async ({ entry }) => {
+        const data = entry.get('data');
+        const diary = data.get('diary');
+
+        if (!diary) return;
+
+        for (let i = 0; i < diary.size; i++) {
+          const item = diary.get(i);
+          const image = item.get('image');
+
+          if (image) {
+            const res = await fetch(image);
+            const blob = await res.blob();
+            const sizeKB = Math.round(blob.size / 1024);
+
+            alert("画像サイズ: " + sizeKB + " KB");
+          }
+        }
+      }
+    });
+    </script>
+    <script>
+      /* =========================
+         プレビューCSS
+      ========================= */
+      CMS.registerPreviewStyle(`
+        img { max-width: 100%; max-height: 280px; object-fit: cover; display: block; }
+        body { font-family: sans-serif; padding: 20px; font-size: 14px; }
+        h1 { font-size: 22px; margin: 8px 0 4px; }
+        p { margin: 4px 0; color: #555; }
+      `);
+
+      /* =========================
+         プレビューテンプレート
+      ========================= */
+      CMS.registerPreviewTemplate('plants', ({ entry }) => {
+        const data = entry.getIn(['data']).toJS();
+
+        return h('div', { style: { maxWidth: '600px', padding: '16px' } },
+
+          data.cover_image && h('img', {
+            src: data.cover_image,
+            style: {
+              width: '100%',
+              maxHeight: '280px',
+              objectFit: 'cover',
+              marginBottom: '16px'
+            }
+          }),
+
+          h('p', { style: { fontSize: '11px', color: '#4a7a3a' } }, data.status),
+
+          h('h1', {}, data.title),
+
+          h('p', { style: { fontStyle: 'italic', color: '#888' } }, data.species),
+
+          h('p', {}, '📅 ' + (data.acquired_date || '—')),
+          h('p', {}, '📍 ' + (data.location || '—')),
+          h('p', {}, '🪵 ' + (data.mount || '—')),
+          
+          data.description && h('p', {
+            style: {
+              marginTop: '12px',
+              lineHeight: '1.8'
+            }
+          }, data.description)
+        );
+      });
+    </script>
+  </body>
+</html>

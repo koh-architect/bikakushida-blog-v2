@@ -1,0 +1,43 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+locale: ja
+
+collections:
+  - name: "plants"
+    label: "株の管理"
+    label_singular: "株"
+    folder: "content/plants"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} / {{species}} / {{acquired_date}}"
+    identifier_field: "title"
+    card_preview_field: "cover_image"
+    fields:
+      - { label: "株名", name: "title", widget: "string" }
+      - { label: "品種", name: "species", widget: "string", required: false }
+      - { label: "入手日", name: "acquired_date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "置き場所", name: "location", widget: "string", required: false }
+      - { label: "板付け素材", name: "mount", widget: "string", required: false }
+      - label: "ステータス"
+        name: "status"
+        widget: "select"
+        options: ["育成中", "要観察", "休眠中", "譲渡済み"]
+        default: "育成中"
+      - { label: "アイキャッチ画像", name: "cover_image", widget: "image", required: false }
+      - { label: "メモ・特徴", name: "description", widget: "text", required: false }
+      - label: "成長日誌"
+        name: "diary"
+        widget: "list"
+        fields:
+          - { label: "日付", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+          - label: "種類"
+            name: "type"
+            widget: "select"
+            options: ["水やり", "施肥", "植え替え", "観察", "その他"]
+          - { label: "写真", name: "image", widget: "image", required: false }
+          
+          - { label: "記録メモ", name: "note", widget: "text" }

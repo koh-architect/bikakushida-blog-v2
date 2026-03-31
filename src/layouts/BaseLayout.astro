@@ -1,0 +1,157 @@
+---
+const { title = "Bikakushida", count = 0 } = Astro.props;
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- フォント -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        margin: 0;
+        background: #f5f1e8;
+        color: #2b2b2b;
+        font-family: 'Noto Serif JP', serif;
+      }
+
+      header {
+        padding: 20px 30px;
+        border-bottom: 1px solid #e0d9cc;
+        background: #f5f1e8;
+      }
+
+      .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .logo {
+        width: 90px;
+        cursor: pointer;
+      }
+
+      .title-block {
+        line-height: 1.6;
+      }
+
+      /* 英字 */
+      .title-main {
+        font-family: 'Playfair Display', serif;
+        font-size: 14px;
+        color: #7a6f5a;
+        letter-spacing: 1px;
+      }
+
+      /* メインタイトル */
+      .title-sub {
+        font-family: 'Noto Serif JP', serif;
+        font-size: 30px;
+        font-weight: 400;
+        letter-spacing: 1px;
+        color: #2a2a2a;
+      }
+
+      /* Platyceriumだけ色変更 */
+      .platy {
+        color: #3f6b3f;
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+        margin-right: 4px;
+      }
+
+      .title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .title-jp {
+        font-size: 13px;
+        font-weight: 300;
+        color: #8a7f6a;
+      }
+
+      /* 株数バッジ */
+      .count-badge {
+        font-size: 12px;
+        background: #dfeadf;
+        color: #3a5f3a;
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+
+      /* メインエリア */
+      .page {
+        max-width: 1000px;
+        margin: auto;
+        padding: 30px;
+        animation: fadeIn 0.6s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="header-inner">
+
+        <div class="left">
+
+          <!-- ロゴ -->
+          <a href="/plants">
+            <img src="/images/logo.png" class="logo" />
+          </a>
+
+          <!-- タイトル -->
+          <div class="title-block">
+            <div class="title-main">Cultivation Journal</div>
+
+            <div class="title-sub">
+              <span class="platy">Platycerium</span>育成記録
+            </div>
+
+            <div class="title-row">
+              <div class="title-jp">我が家のビカクシダたち</div>
+              <div class="count-badge">株数：{count}</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </header>
+
+    <main class="page">
+      <slot />
+    </main>
+
+  </body>
+</html>

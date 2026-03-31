@@ -1,0 +1,25 @@
+---
+title: shimachu_1
+species: ビフルカツム
+acquired_date: 2026-02-14
+location: リビング
+mount: ジャイロイド板２０cm
+status: 育成中
+cover_image: /images/uploads/img_9481.jpeg
+description: |-
+  島忠で買った初めてのビカクシダ。そこそこ大きな鉢苗。立派です。
+  買って１ヶ月で貯水葉がいきなり展開してきた偉い子。
+diary:
+  - date: 2026-03-22
+    type: 観察
+    image: /images/uploads/img_9564.jpeg
+    note: 貯水葉の展開は順潮です。右側にさらに貯水葉の新芽が展開してきました！
+  - date: 2026-03-24
+    type: 観察
+    image: /images/uploads/IMG_1774325965328.jpg
+    note: 完全に古い貯水葉を覆いました、3日くらいでどんどん大きくなってきた！右側に次の貯水葉の新芽がスタンバイしています。そろそろ左は成長止まるかな。
+  - date: 2026-03-30
+    type: 観察
+    image: /images/uploads/IMG_1774860218886.jpg
+    note: 左側の貯水葉の形も整って、右側の新芽の貯水葉も大きくなってきました！藻が全然生えてなくて不思議。他の子はけっこう藻だらけになってます。
+---
