@@ -138,6 +138,11 @@ const diaryCount = diary.length;
 </div>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@400;600&display=swap');
+
+/* =========================
+  基本
+========================= */
 .hero {
   width: 100%;
   max-height: 420px;
@@ -157,15 +162,6 @@ const diaryCount = diary.length;
   margin-bottom: 20px;
 }
 
-.title-sub {
-  margin-bottom: 6px;
-}
-
-.title-row {
-  margin-top: 6px;
-}
-
-
 .species {
   font-family: 'Playfair Display', serif;
   font-size: 30px;
@@ -179,6 +175,9 @@ const diaryCount = diary.length;
   margin-bottom: 30px;
 }
 
+/* =========================
+  情報グリッド
+========================= */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -200,10 +199,6 @@ const diaryCount = diary.length;
   border-bottom: none;
 }
 
-.empty {
-  background: transparent;
-}
-
 .label {
   font-size: 11px;
   margin-bottom: 2px;
@@ -211,7 +206,6 @@ const diaryCount = diary.length;
 
 .value {
   font-size: 13px;
-  line-height: 1.4;
 }
 
 .status {
@@ -219,16 +213,19 @@ const diaryCount = diary.length;
   font-weight: 600;
 }
 
+/* =========================
+  タイムライン（PC）
+========================= */
 .timeline {
   position: relative;
   margin-top: 40px;
-  padding-left: 0;   /* ←消す */
+  padding-left: 40px; /* ←PCは余白残す */
 }
 
 .timeline::before {
   content: '';
   position: absolute;
-  left: 8px;
+  left: 16px;
   top: 0;
   bottom: 0;
   width: 2px;
@@ -242,54 +239,57 @@ const diaryCount = diary.length;
 
 .timeline-dot {
   position: absolute;
-  left: -1px;
-  top: 5px;
+  left: 10px;
+  top: 6px;
   width: 10px;
   height: 10px;
   background: #6c8f5f;
   border-radius: 50%;
 }
 
+/* ❌ 中央寄せやめる（これが犯人） */
 .timeline-content {
-  max-width: 600px;   /* ←横幅制御 */
-  margin: 0 auto;     /* ←中央寄せ */
+  max-width: 700px;
 }
 
+/* =========================
+  日誌画像
+========================= */
+.thumb {
+  width: 100%;
+  max-width: 600px;   /* ←PCで大きく */
+  border-radius: 10px;
+  margin: 12px 0;     /* ←中央やめる */
+  display: block;
+}
+
+.thumb:hover {
+  transform: scale(1.03);
+}
+
+/* =========================
+  テキスト
+========================= */
 .meta {
   font-size: 12px;
   color: #8a7f6a;
   margin-bottom: 6px;
 }
 
-.thumb {
-  width: 100%;
-  max-width: 520px;   /* ←PCで大きくする */
-  border-radius: 8px;
-  margin: 12px auto;  /* ←中央寄せ */
-  display: block;     /* ←必須 */
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.thumb:hover {
-  transform: scale(1.05);
-}
-
 .note {
   font-family: 'Noto Serif JP', serif;
   font-size: 13px;
   line-height: 1.7;
-  color: #333;
 }
 
+/* =========================
+  モーダル
+========================= */
 .modal {
   display: none;
   position: fixed;
   z-index: 999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0,0,0,0.7);
   justify-content: center;
   align-items: center;
@@ -301,6 +301,9 @@ const diaryCount = diary.length;
   border-radius: 10px;
 }
 
+/* =========================
+  区切り線
+========================= */
 .divider {
   width: 100%;
   height: 1px;
@@ -308,22 +311,32 @@ const diaryCount = diary.length;
   margin: 18px 0 26px;
 }
 
+/* =========================
+  🔥 スマホ最適化（ここが重要）
+========================= */
 @media (max-width: 600px) {
 
-    .timeline {
-      padding-left: 0;
-    }
-
-    .timeline-content {
-      margin-left: 0;
-    }
-
-    .timeline-dot {
-      left: 0;
-    }
-
+  .timeline {
+    padding-left: 0;
   }
 
+  .timeline::before {
+    left: 6px;
+  }
+
+  .timeline-dot {
+    left: 0;
+  }
+
+  .timeline-content {
+    margin-left: 0;
+  }
+
+  .thumb {
+    margin: 12px auto;  /* ←スマホだけ中央 */
+  }
+
+}
 </style>
 
 <script is:inline>
