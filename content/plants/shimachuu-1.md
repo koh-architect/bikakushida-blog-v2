@@ -6,9 +6,7 @@ location: リビング
 mount: ジャイロイド板２０cm
 status: 育成中
 cover_image: /images/uploads/img_9481.jpeg
-description: |-
-  島忠で買った初めてのビカクシダ。そこそこ大きな鉢苗。立派です。
-  買って１ヶ月で貯水葉がいきなり展開してきた偉い子。
+description: |-島忠で買った初めてのビカクシダ。そこそこ大きな鉢苗。立派です。買って１ヶ月で貯水葉がいきなり展開してきた偉い子。
 diary:
   - date: 2026-03-22
     type: 観察
