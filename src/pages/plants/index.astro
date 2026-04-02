@@ -1,219 +1,28 @@
 ---
-import fs from 'fs';
-import path from 'path';
+/**
+ * ------------------------------------------------------------
+ * /plants/ 一覧ページです。
+ * トップページと同じ一覧 UI を使いますが、導入文だけ少し変えています。
+ * ------------------------------------------------------------
+ */
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PlantArchive from '../../components/PlantArchive.astro';
+import { getAllPlants } from '../../lib/plants';
 
-const plantsDir = path.resolve('./content/plants');
-const files = fs.readdirSync(plantsDir);
-
-const plants = files.map((file) => {
-  const content = fs.readFileSync(path.join(plantsDir, file), 'utf-8');
-
-  const title = content.match(/title:\s*(.*)/)?.[1]?.trim() || '';
-  const species = content.match(/species:\s*(.*)/)?.[1]?.trim() || '';
-  const image = content.match(/cover_image:\s*(.*)/)?.[1]?.trim() || '';
-
-  const acquired = content.match(/acquired_date:\s*(.*)/)?.[1]?.trim() || '';
-  const location = content.match(/location:\s*(.*)/)?.[1]?.trim() || '';
-
-  const diaryMatches = [...content.matchAll(/- date:/g)];
-  const diaryCount = diaryMatches.length;
-
-  const latest = [...content.matchAll(/- date:\s*(.*)/g)]
-    .map(m => m[1])
-    .sort()
-    .pop() || '';
-
-  return {
-    title,
-    species,
-    image,
-    acquired,
-    location,
-    diaryCount,
-    latest,
-    slug: file.replace('.md', '')
-  };
-});
+// 植物一覧を取得します。
+const plants = getAllPlants();
 ---
 
-<BaseLayout title="Plants" count={plants.length}>
-
-  <div class="sort-bar">
-    <button onclick="sortPlants('updated')">更新順</button>
-    <button onclick="sortPlants('created')">追加順</button>
-  </div>
-
-  <div class="list">
-
-    {plants.map((plant) => (
-      <a 
-        href={"/plants/" + plant.slug}
-        class="card"
-        data-updated={plant.latest}
-        data-created={plant.acquired}
-      >
-
-        <div class="image-wrap">
-          <img 
-            src={plant.image} 
-            class="thumb" 
-          />
-        </div>
-
-        <div class="info">
-
-          <div class="status">育成中</div>
-
-          <div class="title">{plant.title}</div>
-          <div class="species">{plant.species}</div>
-
-          <div class="meta">
-            <span>📅 {plant.acquired}</span>
-            <span>📍 {plant.location}</span>
-            <span>📁 {plant.diaryCount}件</span>
-          </div>
-
-          <div class="updated">
-            更新：{plant.latest}
-          </div>
-
-        </div>
-
-      </a>
-    ))}
-
-  </div>
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap');
-
-    /* 🔥 リストはフル幅 */
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      width: 100%;
-    }
-
-    .sort-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .sort-bar button {
-      padding: 6px 12px;
-      border: 1px solid #cfc4b2;
-      background: #fff;
-      cursor: pointer;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-
-    .sort-bar button:hover {
-      background: #f3efe6;
-    }
-
-    /* カード */
-    .card {
-      display: block;
-      width: 100%;
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid #e8e2d6;
-
-      box-shadow: 
-        0 2px 8px rgba(0,0,0,0.04),
-        0 8px 24px rgba(0,0,0,0.06);
-
-      transition: 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 
-        0 4px 12px rgba(0,0,0,0.06),
-        0 12px 32px rgba(0,0,0,0.08);
-    }
-
-    /* 🔥 画像はフル幅に戻す */
-    .image-wrap {
-      overflow: hidden;
-    }
-
-    .thumb {
-      width: 100%;
-      height: 320px;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.6s ease;
-    }
-
-    .card:hover .thumb {
-      transform: scale(1.15);
-    }
-
-    /* 情報 */
-    .info {
-      padding: 22px;
-    }
-
-    .status {
-      display: inline-block;
-      font-size: 12px;
-      padding: 4px 8px;
-      border: 1px solid #6c8f5f;
-      color: #6c8f5f;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
-
-    .title {
-      font-family: 'Playfair Display', serif;
-      font-size: 24px;
-      color: #2a2a2a;
-      margin-bottom: 6px;
-    }
-
-    .species {
-      font-size: 14px;
-      color: #777;
-      margin-bottom: 18px;
-    }
-
-    .meta {
-      display: flex;
-      gap: 18px;
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 10px;
-    }
-
-    .updated {
-      font-size: 12px;
-      color: #999;
-      text-align: right;
-    }
-  </style>
-
-  <script is:inline>
-    function sortPlants(type) {
-      const list = document.querySelector('.list');
-      const cards = Array.from(document.querySelectorAll('.card'));
-
-      cards.sort((a, b) => {
-        const aVal = new Date(a.dataset[type]);
-        const bVal = new Date(b.dataset[type]);
-        return bVal - aVal;
-      });
-
-      list.innerHTML = '';
-      cards.forEach(card => list.appendChild(card));
-    }
-  </script>
-
+<BaseLayout
+  title="Plants | Bikakushida"
+  description="ビカクシダの株一覧ページ"
+  count={plants.length}
+  canonicalPath="/plants/"
+>
+  <PlantArchive
+    plants={plants}
+    introTitle="Plant archive"
+    introText="株ごとの基本情報と最新の記録をまとめたアーカイブです。"
+  />
 </BaseLayout>

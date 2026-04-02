@@ -1,31 +1,82 @@
 ---
-const { title = "Bikakushida", count = 0 } = Astro.props;
+/**
+ * ------------------------------------------------------------
+ * サイト全体のベースレイアウトです。
+ * 今回の修正版では、以下を主に整理しています。
+ * - ロゴ / 画像 / 内部リンクの BASE_URL 対応
+ * - OGP の組み立て整理
+ * - タイトルや説明文を props で渡しやすくする
+ * ------------------------------------------------------------
+ */
+
+import { withBase } from '../lib/url';
+
+// 各ページから受け取る値です。
+const {
+  title = 'Bikakushida',
+  description = 'ビカクシダの育成記録サイト',
+  count = 0,
+  canonicalPath = '/plants/',
+} = Astro.props;
+
+// 本番サイトの URL です。
+const siteUrl = 'https://bikakushida.jp';
+
+// canonical と OGP の URL を明示的に作ります。
+const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
+const ogImageUrl = new URL(withBase('/images/ogp.jpg'), siteUrl).toString();
 ---
 
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <meta property="og:title" content={title} />
-<meta property="og:description" content="ビカクシダの育成記録サイト" />
-<meta property="og:image" content="https://bikakushida.jp/images/ogp.jpg" />
-<meta property="og:url" content="https://bikakushida.jp" />
-<meta property="og:type" content="website" />
-
-<meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- OGP -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bikakushida" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- フォント -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-      /* =========================
-        ベース
-      ========================= */
+      :root {
+        --bg: #f5f1e8;
+        --paper: #fffdfa;
+        --text: #2b2b2b;
+        --muted: #7f7668;
+        --line: #e0d9cc;
+        --green: #3f6b3f;
+        --green-soft: #dfeadf;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
-        background: #f5f1e8;
-        color: #2b2b2b;
+        background: var(--bg);
+        color: var(--text);
         font-family: 'Noto Serif JP', serif;
       }
 
@@ -34,13 +85,14 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         color: inherit;
       }
 
-      /* =========================
-        ヘッダー
-      ========================= */
+      img {
+        max-width: 100%;
+      }
+
       header {
         padding: 20px 30px;
-        border-bottom: 1px solid #e0d9cc;
-        background: #f5f1e8;
+        border-bottom: 1px solid var(--line);
+        background: var(--bg);
       }
 
       .header-inner {
@@ -55,16 +107,19 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         gap: 20px;
       }
 
+      .logo-link {
+        display: inline-flex;
+      }
+
       .logo {
         width: 90px;
         cursor: pointer;
       }
 
-      .title-block {
+      .brand-block {
         line-height: 1.6;
       }
 
-      /* 上段 */
       .title-main {
         font-family: 'Playfair Display', serif;
         font-size: 14px;
@@ -72,29 +127,25 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
         letter-spacing: 1px;
       }
 
-      /* メインタイトル */
       .title-sub {
-  display: flex !important;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 30px;
-  letter-spacing: 1px;
-}
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        font-size: 30px;
+        letter-spacing: 1px;
+      }
 
-      /* Platycerium */
       .platy {
-        color: #3f6b3f;
+        color: var(--green);
         font-family: 'Playfair Display', serif;
         font-weight: 600;
       }
 
-      /* 育成記録 */
       .jp-title {
         font-family: 'Noto Serif JP', serif;
         color: #2a2a2a;
       }
 
-      /* 下段 */
       .title-row {
         display: flex;
         align-items: center;
@@ -110,17 +161,14 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
 
       .count-badge {
         font-size: 12px;
-        background: #dfeadf;
+        background: var(--green-soft);
         color: #3a5f3a;
         padding: 4px 10px;
         border-radius: 999px;
       }
 
-      /* =========================
-        メインエリア
-      ========================= */
-      .page {
-        max-width: 1200px;   /* ←広げた（重要） */
+      main.page {
+        max-width: 1200px;
         margin: auto;
         padding: 30px;
         animation: fadeIn 0.6s ease;
@@ -131,19 +179,24 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
           opacity: 0;
           transform: translateY(10px);
         }
+
         to {
           opacity: 1;
           transform: translateY(0);
         }
       }
 
-      /* =========================
-        🔥 スマホ対応
-      ========================= */
-      @media (max-width: 600px) {
+      footer.site-footer {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 30px 34px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
 
+      @media (max-width: 600px) {
         header {
-          padding: 16px 16px;
+          padding: 16px;
         }
 
         .left {
@@ -154,7 +207,6 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
           width: 70px;
         }
 
-        /* タイトル縦化（今回の本命） */
         .title-sub {
           flex-direction: column;
           align-items: flex-start;
@@ -168,45 +220,41 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
           gap: 4px;
         }
 
-        .page {
+        main.page {
           padding: 20px 16px;
         }
-      }
 
+        footer.site-footer {
+          padding: 0 16px 28px;
+        }
+      }
     </style>
   </head>
 
   <body>
-
     <header>
       <div class="header-inner">
-
         <div class="left">
-
-          <!-- ロゴ -->
-          <a href="/plants/">
-            <img src="/images/logo.png" class="logo" />
+          <!-- ロゴクリックで一覧へ戻します。 -->
+          <a href={withBase('/plants/')} class="logo-link" aria-label="株一覧へ戻る">
+            <img src={withBase('/images/logo.png')} alt="Bikakushida ロゴ" class="logo" />
           </a>
 
-          <!-- タイトル -->
-          <div class="title-block">
-
+          <!-- ブランド表示です。 -->
+          <div class="brand-block">
             <div class="title-main">Cultivation Journal</div>
 
             <div class="title-sub">
-              <div class="platy">Platycerium</div>
-              <div class="jp-title">育成記録</div>
+              <span class="platy">Platycerium</span>
+              <span class="jp-title">育成記録</span>
             </div>
 
             <div class="title-row">
-              <div class="title-jp">我が家のビカクシダたち</div>
-              <div class="count-badge">株数：{count}</div>
+              <span class="title-jp">我が家のビカクシダたち</span>
+              <span class="count-badge">株数 {count}</span>
             </div>
-
           </div>
-
         </div>
-
       </div>
     </header>
 
@@ -214,5 +262,8 @@ const { title = "Bikakushida", count = 0 } = Astro.props;
       <slot />
     </main>
 
+    <footer class="site-footer">
+      <small>Personal archive of platycerium cultivation.</small>
+    </footer>
   </body>
 </html>

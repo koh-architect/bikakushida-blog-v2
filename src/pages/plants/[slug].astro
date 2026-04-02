@@ -1,370 +1,452 @@
 ---
-import fs from 'fs';
-import path from 'path';
+/**
+ * ------------------------------------------------------------
+ * 各株の詳細ページです。
+ * 今回の主な修正点:
+ * - データ取得を src/lib/plants.ts に集約
+ * - 画像URLを withBase() 経由で生成
+ * - 詳細ページリンク切れ / 画像切れを防止
+ * - コメント多めで構造が追いやすいように整理
+ * ------------------------------------------------------------
+ */
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllPlants, getPlantBySlug } from '../../lib/plants';
+import { withBase } from '../../lib/url';
 
-const allFiles = fs.readdirSync(path.resolve('./content/plants'));
-const totalCount = allFiles.length;
-
+// 静的生成用のパスを返します。
 export async function getStaticPaths() {
-  const plantsDir = path.resolve('./content/plants');
-  const files = fs.readdirSync(plantsDir);
-
-  return files.map((file) => ({
-    params: { slug: file.replace('.md', '') }
+  return getAllPlants().map((plant) => ({
+    params: { slug: plant.slug },
   }));
 }
 
+// 現在の slug を受け取ります。
 const { slug } = Astro.params;
 
-const content = fs.readFileSync(
-  path.resolve(`./content/plants/${slug}.md`),
-  'utf-8'
-);
+// 該当植物を取得します。
+const plant = getPlantBySlug(slug ?? '');
 
-// 🔥 trim追加（重要）
-const title = content.match(/title:\s*(.*)/)?.[1]?.trim() || '';
-const image = content.match(/cover_image:\s*(.*)/)?.[1]?.trim() || '';
-const description = content.match(/description:\s*(.*)/)?.[1]?.trim() || '';
-const species = content.match(/species:\s*(.*)/)?.[1]?.trim() || '';
+// ヘッダーの株数表示用です。
+const totalCount = getAllPlants().length;
 
-const acquired = content.match(/acquired_date:\s*(.*)/)?.[1]?.trim() || '';
-const place = content.match(/location:\s*(.*)/)?.[1]?.trim() || '';
-const mount = content.match(/mount:\s*(.*)/)?.[1]?.trim() || '';
-const status = content.match(/status:\s*(.*)/)?.[1]?.trim() || '';
+// 該当データが見つからない場合は生成エラーにします。
+if (!plant) {
+  throw new Error(`Plant not found: ${slug}`);
+}
 
-const diaryMatches = [...content.matchAll(
-  /- date:\s*(.*)\n\s*type:\s*(.*)\n(?:\s*image:\s*(.*)\n)?\s*note:\s*(.*)/g
-)];
-
-const diary = diaryMatches
-  .map(m => ({
-    date: m[1],
-    type: m[2],
-    image: (m[3] || '').trim(),
-    note: m[4]
-  }))
-  .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-const diaryCount = diary.length;
+// 日誌一覧を取り出しておきます。
+const diaryEntries = plant.diary;
 ---
 
-<BaseLayout title={title} count={totalCount}>
+<BaseLayout
+  title={`${plant.title} | Bikakushida`}
+  description={plant.description || `${plant.title} の育成記録`}
+  count={totalCount}
+  canonicalPath={`/plants/${plant.slug}/`}
+>
+  <!-- メイン画像です。 -->
+  {plant.coverImage && (
+    <img
+      src={withBase(plant.coverImage)}
+      alt={`${plant.title} のメイン画像`}
+      class="hero"
+      loading="eager"
+    />
+  )}
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@400;600&display=swap');
-</style>
+  <!-- タイトルブロックです。 -->
+  <div class="title-block">
+    <h1 class="title">{plant.title}</h1>
 
-<!-- 🔥 画像（BASE_URL対応） -->
-{image && (
-  <img 
-    src={image}
-    class="hero" 
-  />
-)}
+    {plant.species && <div class="species">{plant.species}</div>}
 
-<div class="title-block">
-  <h1 class="title">{title}</h1>
-  {species && <div class="species">{species}</div>}
-  <div class="divider"></div>
-</div>
-
-<p class="description">{description}</p>
-
-<div class="info-grid">
-
-  <div class="info-item">
-    <div class="label">入手日</div>
-    <div class="value">{acquired}</div>
+    <div class="divider"></div>
   </div>
 
-  <div class="info-item">
-    <div class="label">置き場所</div>
-    <div class="value">{place}</div>
-  </div>
+  <!-- 説明文です。 -->
+  {plant.description && <p class="description">{plant.description}</p>}
 
-  <div class="info-item">
-    <div class="label">板付素材</div>
-    <div class="value">{mount}</div>
-  </div>
-
-  <div class="info-item">
-    <div class="label">記録数</div>
-    <div class="value">{diaryCount}件</div>
-  </div>
-
-  <div class="info-item">
-    <div class="label">ステータス</div>
-    <div class="value status">{status}</div>
-  </div>
-
-  <div class="info-item empty"></div>
-
-</div>
-
-<div class="timeline">
-
-  {diary.map((d) => (
-    <div class="timeline-item">
-
-      <div class="timeline-dot"></div>
-
-      <div class="timeline-content">
-
-        <div class="meta">
-          {d.date} / {d.type}
-        </div>
-
-        <!-- 🔥 日誌画像も修正 -->
-        {d.image && (
-          <img 
-            src={d.image}
-            class="thumb" 
-            onclick="openModal(this.src)" 
-          />
-        )}
-
-        <p class="note">{d.note}</p>
-
-      </div>
-
+  <!-- 基本情報です。 -->
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="label">入手日</div>
+      <div class="value">{plant.acquiredDate || '-'}</div>
     </div>
-  ))}
 
-</div>
+    <div class="info-item">
+      <div class="label">置き場所</div>
+      <div class="value">{plant.location || '-'}</div>
+    </div>
 
-<div id="modal" class="modal" onclick="closeModal()">
-  <img id="modal-img" />
-</div>
+    <div class="info-item">
+      <div class="label">板付素材</div>
+      <div class="value">{plant.mount || '-'}</div>
+    </div>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+JP:wght@400;600&display=swap');
+    <div class="info-item">
+      <div class="label">記録数</div>
+      <div class="value">{plant.diaryCount}件</div>
+    </div>
 
-/* =========================
-  基本
-========================= */
-.hero {
-  width: 100%;
-  max-height: 420px;
-  object-fit: cover;
-  border-radius: 14px;
-  margin-bottom: 25px;
-}
+    <div class="info-item">
+      <div class="label">ステータス</div>
+      <div class="value status">{plant.status || '-'}</div>
+    </div>
 
-.title {
-  font-family: 'Playfair Display', serif;
-  font-size: 36px;
-  color: #1f2a1f;
-  margin: 0;
-}
+    <div class="info-item empty"></div>
+  </div>
 
-.title-block {
-  margin-bottom: 20px;
-}
+  <!-- タイムライン見出しです。 -->
+  <section class="timeline-section">
+    <div class="section-head">
+      <p class="section-kicker">Journal</p>
+      <h2 class="section-title">育成記録</h2>
+    </div>
 
-.species {
-  font-family: 'Playfair Display', serif;
-  font-size: 30px;
-  color: #444;
-}
+    <div class="timeline">
+      {diaryEntries.map((entry) => (
+        <article class="timeline-item">
+          <div class="timeline-dot"></div>
 
-.description {
-  font-family: 'Noto Serif JP', serif;
-  line-height: 1.8;
-  color: #444;
-  margin-bottom: 30px;
-}
+          <div class="timeline-content">
+            <div class="meta">
+              <span class="date">{entry.date}</span>
+              <span class="type-badge">{entry.type || '記録'}</span>
+            </div>
 
-/* =========================
-  情報グリッド
-========================= */
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid #cfc4b2;
-  margin-bottom: 40px;
-}
+            {entry.image && (
+              <button
+                type="button"
+                class="image-button"
+                onclick={`openModal(${JSON.stringify(withBase(entry.image))}, ${JSON.stringify(`${entry.date} / ${entry.type || '記録'}`)})`}
+              >
+                <img
+                  src={withBase(entry.image)}
+                  alt={`${plant.title} の ${entry.date} の記録写真`}
+                  class="thumb"
+                  loading="lazy"
+                />
+              </button>
+            )}
 
-.info-item {
-  padding: 10px 14px;
-  border-right: 1px solid #cfc4b2;
-  border-bottom: 1px solid #cfc4b2;
-}
+            {entry.note && <p class="note">{entry.note}</p>}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 
-.info-item:nth-child(2n) {
-  border-right: none;
-}
+  <!-- 画像モーダルです。 -->
+  <div id="modal" class="modal" onclick="closeModal()">
+    <div class="modal-inner">
+      <img id="modal-img" alt="" />
+      <p id="modal-caption"></p>
+    </div>
+  </div>
 
-.info-item:nth-last-child(-n+2) {
-  border-bottom: none;
-}
-
-.label {
-  font-size: 11px;
-  margin-bottom: 2px;
-}
-
-.value {
-  font-size: 13px;
-}
-
-.status {
-  color: #3f6b3f;
-  font-weight: 600;
-}
-
-/* =========================
-  タイムライン（PC）
-========================= */
-.timeline {
-  position: relative;
-  margin-top: 40px;
-  padding-left: 40px; /* ←PCは余白残す */
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 16px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #cfc4b2;
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.timeline-dot {
-  position: absolute;
-  left: 6px;   /* ←ここ調整 */
-  top: 6px;
-  width: 10px;
-  height: 10px;
-  background: #6c8f5f;
-  border-radius: 50%;
-}
-
-/* ❌ 中央寄せやめる（これが犯人） */
-.timeline-content {
-  max-width: 700px;
-}
-
-/* =========================
-  日誌画像
-========================= */
-.thumb {
-  width: 100%;
-  max-width: 600px;   /* ←PCで大きく */
-  border-radius: 10px;
-  margin: 12px 0;     /* ←中央やめる */
-  display: block;
-}
-
-.thumb:hover {
-  transform: scale(1.03);
-}
-
-/* =========================
-  テキスト
-========================= */
-.meta {
-  font-size: 12px;
-  color: #8a7f6a;
-  margin-bottom: 6px;
-  margin-left: 12px;   /* ←これ追加（重要） */
-}
-
-.note {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-/* =========================
-  モーダル
-========================= */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 10px;
-}
-
-/* =========================
-  区切り線
-========================= */
-.divider {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, #cfc4b2, transparent);
-  margin: 18px 0 26px;
-}
-
-/* =========================
-  🔥 スマホ
-========================= */
-@media (max-width: 600px) {
-
-  .timeline {
-    padding-left: 20px;
-  }
-
-  .timeline::before {
-    left: 8px;
-  }
-
-  .timeline-dot {
-    left: 3px;
-  }
-
-  .timeline-content {
-    margin-left: 10px;
-  }
-
-}
-
-/* =========================
-  🔥 PC（これを外に出す！！）
-========================= */
-@media (min-width: 601px) {
-
-  .timeline-content {
-    margin-left: 32px;   /* ←ここが効く */
-  }
-
-  .meta {
-    margin-left: 6px;
-  }
-
-}
-
-
-
-</style>
-
-<script is:inline>
-  function openModal(src) {
+  <script is:inline>
+    // --------------------------------------------------------
+    // 画像モーダル制御です。
+    // 各日誌画像ボタンから openModal() を呼びます。
+    // --------------------------------------------------------
     const modal = document.getElementById('modal');
-    const img = document.getElementById('modal-img');
-    img.src = src;
-    modal.style.display = 'flex';
-  }
+    const modalImg = document.getElementById('modal-img');
+    const modalCaption = document.getElementById('modal-caption');
 
-  function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
-</script>
+    // モーダルを開きます。
+    function openModal(src, caption) {
+      if (!modal || !modalImg || !modalCaption) return;
 
+      modalImg.src = src;
+      modalImg.alt = caption || '';
+      modalCaption.textContent = caption || '';
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // モーダルを閉じます。
+    function closeModal() {
+      if (!modal || !modalImg || !modalCaption) return;
+
+      modal.classList.remove('is-open');
+      modalImg.src = '';
+      modalCaption.textContent = '';
+      document.body.style.overflow = '';
+    }
+
+    // Esc キーでも閉じられるようにします。
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // グローバルから呼べるように明示しておきます。
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+  </script>
+
+  <style>
+    .hero {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      display: block;
+      background: #ece6da;
+    }
+
+    .title-block {
+      margin-bottom: 20px;
+    }
+
+    .title {
+      margin: 0;
+      font-family: 'Playfair Display', 'Noto Serif JP', serif;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      line-height: 1.15;
+      color: #1f2a1f;
+    }
+
+    .species {
+      margin-top: 0.45rem;
+      font-size: clamp(1.15rem, 3vw, 1.5rem);
+      color: #4f4a42;
+    }
+
+    .divider {
+      width: 68px;
+      height: 1px;
+      background: #d3c8b8;
+      margin-top: 16px;
+    }
+
+    .description {
+      line-height: 1.95;
+      color: #444;
+      margin: 0 0 30px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid #d6ccbd;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fffdfa;
+      margin-bottom: 42px;
+    }
+
+    .info-item {
+      padding: 16px 18px;
+      border-bottom: 1px solid #ebe2d5;
+      border-right: 1px solid #ebe2d5;
+      min-height: 84px;
+    }
+
+    .info-item:nth-child(2n) {
+      border-right: none;
+    }
+
+    .info-item:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+
+    .label {
+      font-size: 0.82rem;
+      color: #7d7467;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .value {
+      color: #2f2b26;
+      line-height: 1.7;
+    }
+
+    .value.status {
+      color: #355335;
+    }
+
+    .timeline-section {
+      margin-top: 12px;
+    }
+
+    .section-head {
+      margin-bottom: 20px;
+    }
+
+    .section-kicker {
+      margin: 0 0 0.35rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7a6f5a;
+    }
+
+    .section-title {
+      margin: 0;
+      font-family: 'Playfair Display', 'Noto Serif JP', serif;
+      font-size: 1.75rem;
+      color: #28251f;
+    }
+
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #d7ccbb;
+    }
+
+    .timeline-item {
+      position: relative;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -20px;
+      top: 9px;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #6c8f5f;
+      box-shadow: 0 0 0 4px #f5f1e8;
+    }
+
+    .timeline-content {
+      background: #fffdfa;
+      border: 1px solid #e7dfd2;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .date {
+      color: #514b40;
+      font-size: 0.96rem;
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #cfc4b2;
+      border-radius: 999px;
+      padding: 0.24rem 0.66rem;
+      font-size: 0.78rem;
+      color: #5d564b;
+      background: #faf6ef;
+    }
+
+    .image-button {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: zoom-in;
+      margin-bottom: 14px;
+    }
+
+    .thumb {
+      width: 100%;
+      max-height: 520px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      background: #ece6da;
+    }
+
+    .note {
+      margin: 0;
+      line-height: 1.95;
+      color: #3e3a34;
+      white-space: pre-wrap;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(16, 16, 16, 0.82);
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal.is-open {
+      display: grid;
+    }
+
+    .modal-inner {
+      max-width: min(1100px, 96vw);
+      max-height: 92vh;
+    }
+
+    #modal-img {
+      display: block;
+      max-width: 100%;
+      max-height: 82vh;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.32);
+    }
+
+    #modal-caption {
+      margin: 10px 0 0;
+      text-align: center;
+      color: #f5f1e8;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 720px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-item {
+        border-right: none;
+      }
+
+      .info-item:nth-last-child(-n + 2) {
+        border-bottom: 1px solid #ebe2d5;
+      }
+
+      .info-item:last-child {
+        border-bottom: none;
+      }
+
+      .info-item.empty {
+        display: none;
+      }
+
+      .timeline {
+        padding-left: 18px;
+      }
+
+      .timeline-dot {
+        left: -18px;
+      }
+    }
+  </style>
 </BaseLayout>

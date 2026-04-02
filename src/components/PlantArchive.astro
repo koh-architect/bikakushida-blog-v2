@@ -1,0 +1,310 @@
+---
+/**
+ * ------------------------------------------------------------
+ * 植物一覧 UI を共通化したコンポーネントです。
+ * src/pages/index.astro と src/pages/plants/index.astro の
+ * 重複を減らす目的で追加しています。
+ * ------------------------------------------------------------
+ */
+
+import type { PlantRecord } from '../lib/plants';
+import { withBase } from '../lib/url';
+
+// 親ページから植物一覧と導入文を受け取ります。
+const {
+  plants = [],
+  introTitle = 'Archive',
+  introText = '',
+} = Astro.props as {
+  plants: PlantRecord[];
+  introTitle?: string;
+  introText?: string;
+};
+---
+
+<section class="archive-shell">
+  <!-- 導入文は任意です。トップと /plants/ で文言を変えられます。 -->
+  {(introTitle || introText) && (
+    <div class="archive-intro">
+      {introTitle && <p class="archive-kicker">{introTitle}</p>}
+      {introText && <p class="archive-lead">{introText}</p>}
+    </div>
+  )}
+
+  <!-- 並び替え UI です。 -->
+  <div class="sort-bar" aria-label="並び替え">
+    <span class="sort-label">Archive order</span>
+
+    <div class="sort-buttons">
+      <button type="button" class="sort-button is-active" data-sort-trigger="updated">
+        最新更新
+      </button>
+
+      <button type="button" class="sort-button" data-sort-trigger="created">
+        追加順
+      </button>
+    </div>
+  </div>
+
+  <!-- 一覧本体です。 -->
+  <div class="archive-list" id="plant-list">
+    {plants.map((plant, index) => (
+      <a
+        href={withBase(`/plants/${plant.slug}/`)}
+        class="archive-card"
+        data-updated={plant.latestDiaryDate}
+        data-created={plant.acquiredDate}
+        style={`animation-delay: ${index * 0.06}s`}
+      >
+        <div class="archive-image-wrap">
+          {plant.coverImage ? (
+            <img
+              src={withBase(plant.coverImage)}
+              alt={`${plant.title} のカバー画像`}
+              class="archive-image"
+              loading="lazy"
+            />
+          ) : (
+            <div class="archive-image archive-image-placeholder">No Image</div>
+          )}
+        </div>
+
+        <div class="archive-body">
+          <!-- status は固定文字ではなく実データから出します。 -->
+          {plant.status && <div class="archive-status">{plant.status}</div>}
+
+          <h2 class="archive-title">{plant.title}</h2>
+
+          {plant.species && <p class="archive-species">{plant.species}</p>}
+
+          <div class="archive-meta">
+            {plant.latestDiaryDate && <span>更新 {plant.latestDiaryDate}</span>}
+            {plant.diaryCount > 0 && <span>記録 {plant.diaryCount}件</span>}
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>
+
+<script is:inline>
+  // ----------------------------------------------------------
+  // 一覧カードの並び替えを行う簡単なスクリプトです。
+  // 初期描画は Astro 側ですでに「最新更新順」にしているため、
+  // ここではユーザーが押した時だけ並び替えます。
+  // ----------------------------------------------------------
+  const list = document.getElementById('plant-list');
+  const triggers = Array.from(document.querySelectorAll('[data-sort-trigger]'));
+
+  // 日付文字列比較用の補助関数です。
+  const dateValue = (value) => {
+    // 空文字でもエラーにならないように 0 扱いします。
+    const time = new Date(value || '').getTime();
+    return Number.isNaN(time) ? 0 : time;
+  };
+
+  // 指定キーでカードを並べ替えます。
+  const sortPlants = (mode) => {
+    if (!list) return;
+
+    const cards = Array.from(list.querySelectorAll('.archive-card'));
+
+    cards.sort((a, b) => {
+      const aValue = dateValue(a.dataset[mode]);
+      const bValue = dateValue(b.dataset[mode]);
+      return bValue - aValue;
+    });
+
+    cards.forEach((card, index) => {
+      // 並べ直したあとに DOM へ再配置します。
+      list.appendChild(card);
+      // アニメーションの見た目を少し揃えます。
+      card.style.animationDelay = `${index * 0.04}s`;
+    });
+
+    // ボタンの active 表示を更新します。
+    triggers.forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.sortTrigger === mode);
+    });
+  };
+
+  // 各ボタンへイベントを登録します。
+  triggers.forEach((button) => {
+    button.addEventListener('click', () => {
+      sortPlants(button.dataset.sortTrigger);
+    });
+  });
+</script>
+
+<style>
+  .archive-shell {
+    width: 100%;
+  }
+
+  .archive-intro {
+    margin-bottom: 1.75rem;
+  }
+
+  .archive-kicker {
+    margin: 0 0 0.4rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a6f5a;
+  }
+
+  .archive-lead {
+    margin: 0;
+    color: #5b5548;
+    line-height: 1.9;
+  }
+
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #ddd3c3;
+  }
+
+  .sort-label {
+    font-size: 0.82rem;
+    color: #7a6f5a;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .sort-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .sort-button {
+    border: 1px solid #cfc4b2;
+    background: #fffdf8;
+    color: #584f40;
+    border-radius: 999px;
+    padding: 0.48rem 0.9rem;
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .sort-button:hover {
+    background: #f4efe5;
+  }
+
+  .sort-button.is-active {
+    background: #dfeadf;
+    border-color: #bcd0bc;
+    color: #355335;
+  }
+
+  .archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .archive-card {
+    display: block;
+    background: #fffdfa;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e7dfd2;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04), 0 10px 28px rgba(0, 0, 0, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: archiveCardIn 0.55s ease forwards;
+  }
+
+  @keyframes archiveCardIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .archive-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05), 0 14px 34px rgba(0, 0, 0, 0.08);
+  }
+
+  .archive-image-wrap {
+    overflow: hidden;
+    background: #ece6da;
+  }
+
+  .archive-image {
+    display: block;
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .archive-card:hover .archive-image {
+    transform: scale(1.05);
+  }
+
+  .archive-image-placeholder {
+    display: grid;
+    place-items: center;
+    color: #8d8577;
+    font-size: 0.9rem;
+  }
+
+  .archive-body {
+    padding: 1.3rem 1.35rem 1.4rem;
+  }
+
+  .archive-status {
+    display: inline-block;
+    margin-bottom: 0.8rem;
+    border: 1px solid #6c8f5f;
+    color: #4e6e44;
+    border-radius: 999px;
+    padding: 0.28rem 0.7rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+
+  .archive-title {
+    margin: 0 0 0.25rem;
+    font-family: 'Playfair Display', 'Noto Serif JP', serif;
+    font-size: clamp(1.45rem, 2vw, 1.8rem);
+    line-height: 1.2;
+    color: #28251f;
+  }
+
+  .archive-species {
+    margin: 0 0 1rem;
+    color: #726b5f;
+  }
+
+  .archive-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: #655f54;
+  }
+
+  @media (max-width: 640px) {
+    .archive-image {
+      height: 250px;
+    }
+
+    .sort-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
