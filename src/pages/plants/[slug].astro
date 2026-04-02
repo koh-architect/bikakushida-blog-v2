@@ -45,6 +45,9 @@ const diaryEntries = plant.diary;
   count={totalCount}
   canonicalPath={`/plants/${plant.slug}/`}
 >
+
+　<a href={withBase('/plants/')} class="back-link">← 標本一覧へ戻る</a>
+
   <!-- メイン画像です。 -->
   {plant.coverImage && (
     <img
@@ -188,6 +191,28 @@ const diaryEntries = plant.diary;
   </script>
 
   <style>
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 12px;
+      color: #5f6f5f;
+      text-decoration: none;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      border-bottom: 1px solid transparent;
+    }
+
+    .back-link:hover {
+      color: #3f6b3f;
+      border-bottom-color: rgba(63, 107, 63, 0.35);
+    }
+
+    .back-link:focus-visible {
+      outline: 2px solid rgba(63, 107, 63, 0.35);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
     .hero {
       width: 100%;
       max-height: 420px;
