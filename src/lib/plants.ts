@@ -2,10 +2,13 @@
 // 植物データの読み取りを 1 か所に集約するための共通ロジックです。
 // 一覧ページと詳細ページで別々に正規表現を書くと壊れやすいので、
 // ここにまとめています。
+// 今回は Android アプリ側が保存した
+// "前後にクオート付きの画像パス" も安全に吸収します。
 // ------------------------------------------------------------
 
 import fs from 'fs';
 import path from 'path';
+import { stripWrappingQuotes } from './url';
 
 // 日誌 1 件分の型です。
 export type DiaryEntry = {
@@ -41,12 +44,14 @@ function extractFrontMatter(markdown: string): string {
   return match?.[1] ?? '';
 }
 
-// frontmatter から、指定キーの単一行値を取り出します。
-// 今回のデータは description も 1 行運用が前提なので、この方式で揃えています。
-// 将来的に複数行 frontmatter にしたくなったら、ここを差し替えれば済みます。
+// 単一行値を取り出しつつ、前後クオートも除去します。
+// これで以下の両方を吸収できます。
+//   cover_image: /images/uploads/a.jpg
+//   cover_image: "/images/uploads/a.jpg"
 function extractField(frontMatter: string, key: string): string {
   const regex = new RegExp(`^${key}:\\s*(.*)$`, 'm');
-  return frontMatter.match(regex)?.[1]?.trim() ?? '';
+  const rawValue = frontMatter.match(regex)?.[1]?.trim() ?? '';
+  return stripWrappingQuotes(rawValue);
 }
 
 // 日誌ブロックを frontmatter 内から取り出します。
@@ -58,6 +63,7 @@ function extractDiaryBlock(frontMatter: string): string {
 
 // 日誌ブロックを DiaryEntry[] に変換します。
 // note は次の "- date:" までを拾うので、複数行にも多少強くしています。
+// image は前後クオート付きでも stripWrappingQuotes で正規化します。
 function parseDiaryEntries(frontMatter: string): DiaryEntry[] {
   const diaryBlock = extractDiaryBlock(frontMatter);
 
@@ -71,11 +77,11 @@ function parseDiaryEntries(frontMatter: string): DiaryEntry[] {
 
   const entries = [...diaryBlock.matchAll(entryRegex)].map((match) => ({
     // trim して余計な空白を落とします。
-    date: match[1]?.trim() ?? '',
-    type: match[2]?.trim() ?? '',
-    image: match[3]?.trim() ?? '',
+    date: stripWrappingQuotes(match[1]?.trim() ?? ''),
+    type: stripWrappingQuotes(match[2]?.trim() ?? ''),
+    image: stripWrappingQuotes(match[3]?.trim() ?? ''),
     // note は複数行になっても一応読めるようにしています。
-    note: (match[4] ?? '').trim(),
+    note: stripWrappingQuotes((match[4] ?? '').trim()),
   }));
 
   // 新しい日付順に並べて返します。
