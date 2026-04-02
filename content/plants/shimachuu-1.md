@@ -25,3 +25,4 @@ diary:
   type: "観察"
   image: "/images/uploads/img_9564.jpeg"
   note: "貯水葉の展開は順潮です。右側にさらに貯水葉の新芽が展開してきました！"
+---
