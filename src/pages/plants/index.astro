@@ -2,17 +2,21 @@
 /**
  * ------------------------------------------------------------
  * /plants/ 一覧ページです。
- * トップページと同じ一覧 UI を使いますが、導入文だけ少し変えています。
+ * トップページと同じ一覧UIを使います。
+ * 導入文は content/site/archive-intro.md から共通で読み込みます。
  * ------------------------------------------------------------
  */
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PlantArchive from '../../components/PlantArchive.astro';
 import { getAllPlants } from '../../lib/plants';
-import { ARCHIVE_INTRO_TITLE, ARCHIVE_INTRO_TEXT } from '../../lib/siteText';
+import { getArchiveIntro } from '../../lib/siteContent';
 
 // 植物一覧を取得します。
 const plants = getAllPlants();
+
+// 共通の導入文を取得します。
+const archiveIntro = getArchiveIntro();
 ---
 
 <BaseLayout
@@ -23,7 +27,7 @@ const plants = getAllPlants();
 >
   <PlantArchive
     plants={plants}
-    introTitle={ARCHIVE_INTRO_TITLE}
-    introText={ARCHIVE_INTRO_TEXT}
+    introTitle={archiveIntro.archiveIntroTitle}
+    introText={archiveIntro.archiveIntroText}
   />
 </BaseLayout>
