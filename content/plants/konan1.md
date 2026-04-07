@@ -1,23 +1,27 @@
 ---
-title: konan_1
-species: ネザーランズ
-acquired_date: 2026-03-01
-location: リビング
-mount: ジャイロイド板
-status: 育成中
-cover_image: /images/uploads/img_9486.jpeg
-description: コーナンのビザールプランツフェアの売れ残り株。残り2個でした。あんまり元気がない株でしたが、胞子葉の新芽は出てそうだったので購入することにしました。港北ではIKEA、コーナン、ライボタが巡回コースになりそう笑
+title: "konan_1"
+species: "ネザーランズ"
+acquired_date: "2026-03-01"
+location: "リビング"
+mount: "ジャイロイド板"
+status: "育成中"
+cover_image: "/images/uploads/img_9486.jpeg"
+description: "コーナンのビザールプランツフェアの売れ残り株。残り2個でした。あんまり元気がない株でしたが、胞子葉の新芽は出てそうだったので購入することにしました。港北ではIKEA、コーナン、ライボタが巡回コースになりそう笑"
 diary:
-  - date: 2026-03-22
-    type: 観察
-    image: /images/uploads/img_9585.jpeg
-    note: ...
-  - date: 2026-03-24
-    type: 観察
-    image: /images/uploads/IMG_1774325576763.jpg
-    note: 胞子葉がぐんぐん伸びてきた、元気なかったけど少しスイッチ入った感じします。貯水葉のターンはしばらく先かな。
-  - date: 2026-03-30
-    type: 観察
-    image: /images/uploads/IMG_1774866305859.jpg
-    note: 胞子葉の新芽が伸びてきました。まだしばらくは胞子葉のターンかな？
+- date: "2026-04-07"
+  type: "観察"
+  image: "/images/uploads/IMG_1775553258966.jpg"
+  note: "新しい胞子葉も大きくなってきました。次の胞子葉もスタンバイしてますね。"
+- date: "2026-03-30"
+  type: "観察"
+  image: "/images/uploads/IMG_1774866305859.jpg"
+  note: "胞子葉の新芽が伸びてきました。まだしばらくは胞子葉のターンかな？"
+- date: "2026-03-24"
+  type: "観察"
+  image: "/images/uploads/IMG_1774325576763.jpg"
+  note: "胞子葉がぐんぐん伸びてきた、元気なかったけど少しスイッチ入った感じします。貯水葉のターンはしばらく先かな。"
+- date: "2026-03-22"
+  type: "観察"
+  image: "/images/uploads/img_9585.jpeg"
+  note: "..."
 ---
