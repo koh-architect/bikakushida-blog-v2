@@ -1,19 +1,23 @@
 ---
-title: shimachu_2 pup
-species: ネザーランズ　子株
-acquired_date: 2026-03-10
-location: リビング
-mount: ジャイロイド板15cm
-status: 育成中
-cover_image: /images/uploads/img_9484.jpeg
-description: 島忠2号にはすでに子株が居たので、練習のため子株の取り分け！ものすごく徒長したショボショボした苗ですが、復活してくれるでしょうか？
+title: "shimachu_2 pup"
+species: "ネザーランズ　子株"
+acquired_date: "2026-03-10"
+location: "リビング"
+mount: "ジャイロイド板15cm"
+status: "育成中"
+cover_image: "/images/uploads/img_9484.jpeg"
+description: "島忠2号にはすでに子株が居たので、練習のため子株の取り分け！ものすごく徒長したショボショボした苗ですが、復活してくれるでしょうか？"
 diary:
-  - date: 2026-03-22
-    type: 観察
-    image: /images/uploads/img_9581.jpeg
-    note: なかなか定着しないみたい。ただ枯れてもないので、根張りを頑張ってる最中かな？
-  - date: 2026-03-24
-    type: 観察
-    image: /images/uploads/IMG_1774327948145.jpg
-    note: 今のところ何も動きがないです。 改行コメントテスト用の送信です。
+- date: "2026-04-07"
+  type: "観察"
+  image: "/images/uploads/IMG_1775536077943.jpg"
+  note: "ビルドテスト"
+- date: "2026-03-24"
+  type: "観察"
+  image: "/images/uploads/IMG_1774327948145.jpg"
+  note: "今のところ何も動きがないです。 改行コメントテスト用の送信です。"
+- date: "2026-03-22"
+  type: "観察"
+  image: "/images/uploads/img_9581.jpeg"
+  note: "なかなか定着しないみたい。ただ枯れてもないので、根張りを頑張ってる最中かな？"
 ---
