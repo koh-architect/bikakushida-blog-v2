@@ -8,4 +8,8 @@ status: "育成中"
 cover_image: "/images/uploads/IMG_1783910050589.jpg"
 description: "バンダカプランツで購入したジェイドガールです。ドワーフ品種は初めてなので楽しみ！小さい板付から初めてみます。"
 diary:
+- date: "2026-07-13"
+  type: "観察"
+  image: "/images/uploads/IMG_1783943239918.jpg"
+  note: "まだ小さい株なので15cmのジャイロイド板に付けました。水苔はやや多めに巻いてます！\n新芽は出ています。"
 ---
