@@ -10,10 +10,6 @@ description: "有名な練馬のオザキフラワーパークで買った子株
 diary:
 - date: "2026-07-17"
   type: "観察"
-  image: "/images/uploads/IMG_1784298921103.jpg"
-  note: "テスト1"
-- date: "2026-07-17"
-  type: "観察"
   image: "/images/uploads/IMG_1784298944592.jpg"
   note: "テスト2"
 - date: "2026-07-16"
