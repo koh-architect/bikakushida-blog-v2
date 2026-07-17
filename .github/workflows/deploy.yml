@@ -7,7 +7,7 @@ on:
 # 🔥 追加：同時実行制御
 concurrency:
   group: pages-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read
