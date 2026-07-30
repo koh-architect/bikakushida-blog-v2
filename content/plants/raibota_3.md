@@ -10,10 +10,6 @@ description: "ライボタから3株目のお迎えです。アーバンリバ�
 diary:
 - date: "2026-07-18"
   type: "観察"
-  image: "/images/uploads/IMG_1784305225800.jpg"
-  note: "テスト"
-- date: "2026-07-18"
-  type: "観察"
   image: "/images/uploads/IMG_1784305252017.jpg"
   note: "テスト2"
 - date: "2026-07-17"
