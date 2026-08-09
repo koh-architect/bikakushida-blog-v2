@@ -11,13 +11,34 @@
 
 import { withBase } from '../lib/url';
 
+type BreadcrumbItem = {
+  name: string;
+  path: string;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  count?: number;
+  canonicalPath?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  schemaType?: 'WebPage' | 'CollectionPage';
+  lastModified?: string;
+  breadcrumbs?: BreadcrumbItem[];
+}
 
 // 各ページから受け取る値です。
 const {
   title = 'Bikakushida',
   description = 'ビカクシダの育成記録サイト',
   count = 0,
-  canonicalPath = '/plants/',
+  canonicalPath = '/',
+  ogImage = '/images/ogp.jpg',
+  ogType = 'website',
+  schemaType = 'WebPage',
+  lastModified = '',
+  breadcrumbs = [],
 } = Astro.props;
 
 // 本番サイトの URL です。
@@ -25,11 +46,56 @@ const siteUrl = 'https://bikakushida.jp';
 
 // canonical と OGP の URL を明示的に作ります。
 const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
-const ogImageUrl = new URL(withBase('/images/ogp.jpg'), siteUrl).toString();
+const ogImageUrl = new URL(withBase(ogImage), siteUrl).toString();
+
+// 検索エンジンへサイトとページの関係を伝える構造化データです。
+const schemaGraph: Record<string, unknown>[] = [
+  {
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    url: `${siteUrl}/`,
+    name: 'Bikakushida',
+    description: 'ビカクシダの株別育成記録と写真付き成長日誌',
+    inLanguage: 'ja',
+  },
+  {
+    '@type': schemaType,
+    '@id': `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: title,
+    description,
+    inLanguage: 'ja',
+    isPartOf: { '@id': `${siteUrl}/#website` },
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: ogImageUrl,
+    },
+    ...(lastModified ? { dateModified: lastModified } : {}),
+  },
+];
+
+if (breadcrumbs.length > 0) {
+  schemaGraph.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: new URL(item.path, siteUrl).toString(),
+    })),
+  });
+}
+
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': schemaGraph,
+}).replace(/</g, '\\u003c');
 ---
 
 <html lang="ja">
   <head>
+    <meta charset="UTF-8" />
+
     <!-- Google Analytics: 本番環境だけで計測します -->
     {import.meta.env.PROD && (
       <>
@@ -43,24 +109,41 @@ const ogImageUrl = new URL(withBase('/images/ogp.jpg'), siteUrl).toString();
       </>
     )}
 
-    <meta charset="UTF-8" />
     <title>{title}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Bikakushida" />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
 
     <!-- OGP -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={`${title} の画像`} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Bikakushida" />
+    <meta property="og:locale" content="ja_JP" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={`${title} の画像`} />
+
+    <!-- 構造化データ -->
+    <script type="application/ld+json" set:html={structuredData}></script>
+
+    <!-- PWA -->
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <meta name="theme-color" content="#4a6741" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
     <!-- フォント -->
     <link
@@ -244,17 +327,12 @@ const ogImageUrl = new URL(withBase('/images/ogp.jpg'), siteUrl).toString();
       }
     </style>
   </head>
-    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
-    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
-    <meta name="theme-color" content="#4a6741" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <body>
     <header>
       <div class="header-inner">
         <div class="left">
           <!-- ロゴクリックで一覧へ戻します。 -->
-          <a href={withBase('/plants/')} class="logo-link" aria-label="株一覧へ戻る">
+          <a href={withBase('/')} class="logo-link" aria-label="株一覧へ戻る">
             <img src={withBase('/images/logo.png')} alt="Bikakushida ロゴ" class="logo" />
           </a>
 

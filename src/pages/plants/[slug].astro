@@ -37,22 +37,44 @@ if (!plant) {
 
 // 日誌一覧を取り出しておきます。
 const diaryEntries = plant.diary;
+
+// 検索結果では管理名だけでなく品種名も分かるようにします。
+const plantSeoName =
+  plant.species && plant.species !== plant.title
+    ? `${plant.species}（${plant.title}）`
+    : plant.title;
+
+const defaultSeoDescription = `${plantSeoName}の株別育成記録。入手日、育成環境、板付け方法、写真付きの成長日誌を掲載しています。`;
+const fullSeoDescription = plant.description
+  ? `${plantSeoName}の育成記録。${plant.description}`
+  : defaultSeoDescription;
+const seoDescription =
+  fullSeoDescription.length > 160
+    ? `${fullSeoDescription.slice(0, 157)}…`
+    : fullSeoDescription;
 ---
 
 <BaseLayout
-  title={`${plant.title} | Bikakushida`}
-  description={plant.description || `${plant.title} の育成記録`}
+  title={`${plantSeoName}の育成記録・成長日誌 | Bikakushida`}
+  description={seoDescription}
   count={totalCount}
   canonicalPath={`/plants/${plant.slug}/`}
+  ogImage={plant.coverImage || '/images/ogp.jpg'}
+  ogType="article"
+  lastModified={plant.latestDiaryDate}
+  breadcrumbs={[
+    { name: 'ビカクシダ育成記録', path: '/' },
+    { name: plantSeoName, path: `/plants/${plant.slug}/` },
+  ]}
 >
 
-　<a href={withBase('/plants/')} class="back-link">← 標本一覧へ戻る</a>
+　<a href={withBase('/')} class="back-link">← 標本一覧へ戻る</a>
 
   <!-- メイン画像です。 -->
   {plant.coverImage && (
     <img
       src={withBase(plant.coverImage)}
-      alt={`${plant.title} のメイン画像`}
+      alt={`${plantSeoName}のメイン画像`}
       class="hero"
       loading="eager"
     />
@@ -126,7 +148,7 @@ const diaryEntries = plant.diary;
               >
                 <img
                   src={withBase(entry.image)}
-                  alt={`${plant.title} の ${entry.date} の記録写真`}
+                  alt={`${plantSeoName}の${entry.date}の記録写真`}
                   class="thumb"
                   loading="lazy"
                 />

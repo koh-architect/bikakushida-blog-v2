@@ -20,10 +20,11 @@ const archiveIntro = getArchiveIntro();
 ---
 
 <BaseLayout
-  title="Plants | Bikakushida"
-  description="ビカクシダの株一覧ページ"
+  title="ビカクシダ株一覧・育成アーカイブ | Bikakushida"
+  description="室内で育てているビカクシダの株一覧。品種ごとの基本情報と写真付きの成長日誌をまとめています。"
   count={plants.length}
-  canonicalPath="/plants/"
+  canonicalPath="/"
+  schemaType="CollectionPage"
 >
   <PlantArchive
     plants={plants}

@@ -26,7 +26,7 @@ const {
   <!-- 導入文は任意です。トップと /plants/ で文言を変えられます。 -->
   {(introTitle || introText) && (
     <div class="archive-intro">
-      {introTitle && <p class="archive-kicker">{introTitle}</p>}
+      {introTitle && <h1 class="archive-kicker">{introTitle}</h1>}
       {introText && <p class="archive-lead">{introText}</p>}
     </div>
   )}
@@ -148,6 +148,7 @@ const {
   .archive-kicker {
     margin: 0 0 0.4rem;
     font-size: 0.8rem;
+    font-weight: 400;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #7a6f5a;
