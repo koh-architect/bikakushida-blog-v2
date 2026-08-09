@@ -4,10 +4,10 @@ on:
   push:
     branches: [main]
 
-# 🔥 追加：同時実行制御
+# CMS から連続更新された場合は、古いデプロイを中断して最新状態を公開する
 concurrency:
   group: pages-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 
 permissions:
