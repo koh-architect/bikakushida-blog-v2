@@ -12,6 +12,10 @@ diary:
   type: "観察"
   image: "/images/uploads/IMG_1786283701520.jpg"
   note: "ゆっくりですが、右側に小振りな貯水葉。"
+- date: "2026-08-09"
+  type: "観察"
+  image: "/images/uploads/IMG_1786286825767.jpg"
+  note: "よく見ると中に貯水葉の新芽があります"
 - date: "2026-07-21"
   type: "観察"
   image: "/images/uploads/IMG_1784622411439.jpg"
@@ -23,5 +27,5 @@ diary:
 - date: "2026-07-13"
   type: "観察"
   image: "/images/uploads/IMG_1783943239918.jpg"
-  note: "まだ小さい株なので15cmのジャイロイド板に付けました。水苔はやや多めに巻いてます！\\\\\\\\n新芽は出ています。"
+  note: "まだ小さい株なので15cmのジャイロイド板に付けました。水苔はやや多めに巻いてます！\\\\\\\\\\\\\\\\n新芽は出ています。"
 ---
